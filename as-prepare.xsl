@@ -86,7 +86,8 @@
             <xsl:apply-templates  select="@*|*" />
             <xsl:if  test="not(descendant::ead:unitdate)">
                 <xsl:element name="unitdate">[undated]>
-                    <xsl:comment>Required unitdate missing: "[undated]" added by as-prepare.xsl</xsl:comment>
+                    <xsl:call-template name="log">
+                        <xsl:with-param name="comment">Required unitdate missing: "[undated]" added by as-prepare.xsl</xsl:with-param></xsl:call-template>
                 </xsl:element>
             </xsl:if>
             <xsl:if  test="not(ead:unittitle)">
@@ -121,7 +122,16 @@
     </xsl:template>
 
  
-
+    <xsl:template match="ead:did[not(ead:unittitle) and not(ead:unitdate)]">
+        <xsl:copy>
+            <xsl:apply-templates  select="@*|node()" />
+            <unittitle>[untitled]
+                <xsl:call-template name="log">
+                    <xsl:with-param name="comment">unitdate or unittitle required. Adding unittitle [untitled]</xsl:with-param>
+                </xsl:call-template>
+            </unittitle>
+        </xsl:copy>
+    </xsl:template>
 
 
     <!--  #<:ValidationException: {:errors=>{"instances/0/container/type_1"=>["Property is required but was missing"], 
