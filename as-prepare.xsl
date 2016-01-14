@@ -35,7 +35,7 @@
     
     <xsl:output indent="yes" method="xml" xpath-default-namespace="ead" />
 
-    <xsl:param name="date"  select="current-date()" />
+    <xsl:variable name="today"  select="replace( string(current-date()),  '-\d+:\d+', '' )" />
 
     <xsl:template match="/">        
         <xsl:apply-templates  select="node()" />
@@ -55,7 +55,17 @@
     <!-- ArchivesSpace seems to have trouble with empty anythings   -->
     
     <xsl:template match="@*[normalize-space()='']" />  <!-- don't copy null attributes -->
-        
+ 
+ 
+     
+    
+    <xsl:template match="ead:unitdate[normalize-space()='']" priority="0.1" />  <!-- don't copy other empty unitdates -->
+    
+    <xsl:template match="ead:physloc[normalize-space()='']" />  <!-- don't copy empty physloc -->
+    
+    <xsl:template match="ead:scopecontent[normalize-space()='']" />  <!-- don't copy empty scopecontent -->
+    
+ 
     <xsl:template match="ead:ead/ead:archdesc/ead:did//ead:unitdate[normalize-space()='']">
         <xsl:copy>
             <xsl:text>[undated]</xsl:text>
@@ -63,13 +73,7 @@
                 <xsl:with-param name="comment">Required unitdate empty: "[undated]" added by as-prepare.xsl</xsl:with-param>
             </xsl:call-template>
         </xsl:copy>
-    </xsl:template>
-    <xsl:template match="ead:unitdate[normalize-space()='']" />  <!-- don't copy other empty unitdates -->
-    
-    <xsl:template match="ead:physloc[normalize-space()='']" />  <!-- don't copy empty physloc -->
-    
-    <xsl:template match="ead:scopecontent[normalize-space()='']" />  <!-- don't copy empty scopecontent -->
-    
+    </xsl:template>   
  
     <xsl:template match="/ead:ead/ead:archdesc/ead:did/ead:physdesc[not(ead:extent)]">
         <xsl:copy>
@@ -85,7 +89,7 @@
         <xsl:copy>
             <xsl:apply-templates  select="@*|*" />
             <xsl:if  test="not(descendant::ead:unitdate)">
-                <xsl:element name="unitdate">[undated]>
+                <xsl:element name="unitdate">[undated]
                     <xsl:call-template name="log">
                         <xsl:with-param name="comment">Required unitdate missing: "[undated]" added by as-prepare.xsl</xsl:with-param></xsl:call-template>
                 </xsl:element>
@@ -127,7 +131,7 @@
             <xsl:apply-templates  select="@*|node()" />
             <unittitle>[untitled]
                 <xsl:call-template name="log">
-                    <xsl:with-param name="comment">unitdate or unittitle required. Adding unittitle [untitled]</xsl:with-param>
+                    <xsl:with-param name="comment">unitdate or unittitle required: unittitle [untitled] inserted by as-prepare.xsl</xsl:with-param>
                 </xsl:call-template>
             </unittitle>
         </xsl:copy>
@@ -179,8 +183,8 @@
             <xsl:apply-templates />
             <xsl:element name="change">
                 <xsl:element name="date">
-                        <xsl:attribute name="normal" select="current-date()" />                    
-                    <xsl:value-of select="current-date()"/></xsl:element>
+                        <xsl:attribute name="normal" select="$today" />                    
+                    <xsl:value-of select="$today"/></xsl:element>
                 <xsl:element name="item">Converted to ArchivesSpace EAD requirements with as-prepare.xsl.</xsl:element>
                 <xsl:element name="item"><xsl:value-of select="normalize-space(/ead:ead/ead:eadheader/ead:eadid)" /></xsl:element>
             </xsl:element>
