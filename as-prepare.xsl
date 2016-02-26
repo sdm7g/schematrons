@@ -35,6 +35,8 @@
     
     <xsl:output indent="yes" method="xml" xpath-default-namespace="ead" />
 
+    <!-- Apparently, the value returned by Saxon 9 current-date() is not a valid date according to the EAD schema,
+        due to the hour:min time appended to the end. -->
     <xsl:variable name="today"  select="replace( string(current-date()),  '-\d+:\d+', '' )" />
 
     <xsl:template match="/">        
