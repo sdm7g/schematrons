@@ -145,6 +145,21 @@
     </xsl:template>
 
 
+    <xsl:template
+        match="/ead:ead/ead:archdesc/ead:did/ead:unittitle[ead:unitdate]/text()[ends-with(normalize-space(), ',')]"
+        priority="1.1">
+        <xsl:variable name="nstext" select="normalize-space()"/>
+        <xsl:value-of select="substring($nstext, 1, string-length($nstext) - 1)"/>
+    </xsl:template>
+
+    <xsl:template
+        match="/ead:ead/ead:eadheader/ead:filedesc/ead:titlestmt/ead:titleproper[ead:date]/text()[ends-with(normalize-space(), ',')]"
+        priority="1.1">
+        <xsl:variable name="nstext" select="normalize-space()"/>
+        <xsl:value-of select="substring($nstext, 1, string-length($nstext) - 1)"/>
+    </xsl:template>
+
+
     <!--  #<:ValidationException: {:errors=>{"instances/0/container/type_1"=>["Property is required but was missing"], 
                                 "instances/0/container/indicator_1"=>["Property is required but was missing"]}}>    -->
     <xsl:template match="ead:did/ead:container[normalize-space() = '']">
