@@ -68,30 +68,29 @@
         <xsl:copy>
             <xsl:text>[undated]</xsl:text>
             <xsl:call-template name="log">
-                <xsl:with-param name="comment">Required unitdate empty: "[undated]" added by
-                    as-prepare.xsl</xsl:with-param>
+                <xsl:with-param name="comment">Required unitdate empty: "[undated]" added by as-prepare.xsl</xsl:with-param>
             </xsl:call-template>
         </xsl:copy>
     </xsl:template>
+
 
     <xsl:template match="/ead:ead/ead:archdesc/ead:did/ead:physdesc[not(ead:extent)]">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()"/>
             <xsl:element name="extent">1 arbitrary_unit</xsl:element>
             <xsl:call-template name="log">
-                <xsl:with-param name="comment">Required extent missing: arbitrary value inserted by
-                    as-prepare.</xsl:with-param>
+                <xsl:with-param name="comment">Required extent missing: arbitrary value inserted by as-prepare.</xsl:with-param>
             </xsl:call-template>
         </xsl:copy>
     </xsl:template>
 
+    
     <xsl:template match="/ead:ead/ead:archdesc/ead:did">
         <xsl:copy>
             <xsl:apply-templates select="@* | *"/>
             <xsl:if test="not(descendant::ead:unitdate)">
                 <xsl:element name="unitdate">[undated] <xsl:call-template name="log">
-                        <xsl:with-param name="comment">Required unitdate missing: "[undated]" added
-                            by as-prepare.xsl</xsl:with-param></xsl:call-template>
+                        <xsl:with-param name="comment">Required unitdate missing: "[undated]" added by as-prepare.xsl</xsl:with-param></xsl:call-template>
                 </xsl:element>
             </xsl:if>
             <xsl:if test="not(ead:unittitle)">
@@ -99,8 +98,7 @@
                     <xsl:value-of
                         select="/ead:ead/ead:eadheader/ead:filedesc/ead:titlestmt/ead:titleproper"/>
                     <xsl:call-template name="log">
-                        <xsl:with-param name="comment">Required unittitle missing: copied from
-                            titleproper by as-prepare.xsl</xsl:with-param>
+                        <xsl:with-param name="comment">Required unittitle missing: copied from titleproper by as-prepare.xsl</xsl:with-param>
                     </xsl:call-template>
                 </xsl:element>
             </xsl:if>
@@ -115,8 +113,7 @@
                     <xsl:value-of
                         select="/ead:ead/ead:eadheader/ead:filedesc/ead:titlestmt/ead:subtitle/ead:num[@type = 'collectionnumber']"/>
                     <xsl:call-template name="log">
-                        <xsl:with-param name="comment">Collection number copied from subtitle/num by
-                            as-prepare.xsl</xsl:with-param>
+                        <xsl:with-param name="comment">Collection number copied from subtitle/num by as-prepare.xsl</xsl:with-param>
                     </xsl:call-template>
                 </xsl:element>
             </xsl:if>
@@ -124,8 +121,7 @@
                 <xsl:element name="physdesc">
                     <xsl:element name="extent">1 arbitrary_unit</xsl:element>
                     <xsl:call-template name="log">
-                        <xsl:with-param name="comment">Required physdesc/extent missing: arbitrary
-                            value inserted by as-prepare.</xsl:with-param>
+                        <xsl:with-param name="comment">Required physdesc/extent missing: arbitrary value inserted by as-prepare.</xsl:with-param>
                     </xsl:call-template>
                 </xsl:element>
             </xsl:if>
@@ -137,8 +133,7 @@
         <xsl:copy>
             <xsl:apply-templates select="@* | node()"/>
             <unittitle>[untitled] <xsl:call-template name="log">
-                    <xsl:with-param name="comment">unitdate or unittitle required: unittitle
-                        [untitled] inserted by as-prepare.xsl</xsl:with-param>
+                    <xsl:with-param name="comment">unitdate or unittitle required: unittitle [untitled] inserted by as-prepare.xsl</xsl:with-param>
                 </xsl:call-template>
             </unittitle>
         </xsl:copy>
@@ -164,8 +159,7 @@
                                 "instances/0/container/indicator_1"=>["Property is required but was missing"]}}>    -->
     <xsl:template match="ead:did/ead:container[normalize-space() = '']">
         <xsl:call-template name="log">
-            <xsl:with-param name="comment">empty container element removed by
-                as-prepare.xsl</xsl:with-param>
+            <xsl:with-param name="comment">empty container element removed by as-prepare.xsl</xsl:with-param>
         </xsl:call-template>
     </xsl:template>
 
@@ -192,8 +186,7 @@
                 <xsl:when test="string-length($normtext) &lt; 256">
                     <xsl:value-of select="$normtext"/>
                     <xsl:call-template name="log">
-                        <xsl:with-param name="comment">eadid text normalized by
-                            as-prepare.xsl</xsl:with-param>
+                        <xsl:with-param name="comment">eadid text normalized by as-prepare.xsl</xsl:with-param>
                     </xsl:call-template>
                 </xsl:when>
                 <xsl:otherwise>
