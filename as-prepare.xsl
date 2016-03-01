@@ -26,7 +26,7 @@
 
     <xsl:output indent="yes" method="xml" xpath-default-namespace="ead"/>
 
-    <xsl:param name="urlbase">http://ead.lib.virginia.edu/vivaxtf/view?docid=</xsl:param>
+    <xsl:param name="urlbase">http://ead.lib.virginia.edu/vivaxtf/view?docId=</xsl:param>
     <xsl:param name="orgdir" >uva-hs/</xsl:param>
 
     <xsl:variable name="eadfname" select="replace(tokenize(normalize-space(/ead:ead/ead:eadheader/ead:eadid/text()),'\s+')[last()],'&quot;','')"/>
