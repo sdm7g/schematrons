@@ -26,6 +26,12 @@
 
     <xsl:output indent="yes" method="xml" xpath-default-namespace="ead"/>
 
+    <xsl:param name="urlbase">http://ead.lib.virginia.edu/vivaxtf/view?docid=</xsl:param>
+    <xsl:param name="orgdir" >uva-hs/</xsl:param>
+
+    <xsl:variable name="eadfname" select="replace(tokenize(normalize-space(/ead:ead/ead:eadheader/ead:eadid/text()),'\s+')[last()],'&quot;','')"/>
+    <xsl:variable name="eadidentifier"  select="replace($eadfname,'.xml', '')"/>
+
     <!-- Apparently, the value returned by Saxon 9 current-date() is not a valid date according to the EAD schema,
         due to the hour:min time appended to the end. -->
     <xsl:variable name="today" select="replace(string(current-date()), '-\d+:\d+', '')"/>
@@ -177,12 +183,22 @@
 
 
     <!--  #<:ValidationException: {:errors=>{"ead_id"=>["Must be 255 characters or fewer"]}}>   -->
-    <xsl:template match="ead:eadid[string-length() > 255]">
+    <xsl:template match="ead:eadid">
         <xsl:param name="normtext" select="normalize-space(text())"/>
+        <xsl:message select="$eadidentifier" />
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
+            <xsl:if test="not(@url)">
+                <xsl:attribute name="url" select="concat($urlbase,$orgdir,$eadfname)" />
+            </xsl:if>
+            <xsl:if test="not(@identifier)">
+                <xsl:attribute name="identifier" select="$eadidentifier" />
+            </xsl:if>
             <!-- no subelements for eadid -->
             <xsl:choose>
+                <xsl:when test="string-length() &lt; 255">
+                    <xsl:value-of select="text()"/>
+                </xsl:when>
                 <xsl:when test="string-length($normtext) &lt; 256">
                     <xsl:value-of select="$normtext"/>
                     <xsl:call-template name="log">
