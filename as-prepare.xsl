@@ -6,6 +6,11 @@
     xmlns:ead="urn:isbn:1-931666-22-9" xmlns="urn:isbn:1-931666-22-9"
     exclude-result-prefixes="xs xd xi xtf xsi" version="2.0">
 
+    <!-- https://github.com/YaleArchivesSpace/xslt-files/blob/master/EAD_add_IDs_to_containers.xsl 
+         see FAQ in https://github.com/archivesspace/archivesspace/blob/master/UPGRADING_1.5.0.md
+         identity transform removed from this stylesheet as it's in the imported stylesheet. -->
+    <xsl:import href="EAD_add_IDs_to_containers.xsl"/> 
+
     <xd:doc scope="stylesheet">
         <xd:desc>
             <xd:p><xd:b>Created on:</xd:b>Sept. 21, 2015</xd:p>
@@ -40,13 +45,7 @@
         <xsl:apply-templates select="node()"/>
     </xsl:template>
 
-    <xsl:template match="@* | node()">
-        <!-- identity transform is default -->
-        <xsl:copy>
-            <xsl:apply-templates select="@* | node()"/>
-        </xsl:copy>
-    </xsl:template>
-
+ 
     <xsl:template match="text()" priority="0.8">
         <xsl:value-of select="normalize-space(.)"/>
     </xsl:template>
