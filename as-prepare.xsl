@@ -66,14 +66,10 @@
     <xsl:template match="ead:unitdate[normalize-space() = '']" priority="0.1"/>
     <!-- don't copy other empty unitdates -->
 
-    <xsl:template match="ead:physloc[normalize-space() = '']"/>
-    <!-- don't copy empty physloc -->
-
-    <xsl:template match="ead:scopecontent[normalize-space() = '']"/>
-    <!-- don't copy empty scopecontent -->
-
-    <xsl:template match="ead:origination[ead:persname[normalize-space() = '']]"/>
-    <!-- don't copy -->
+    <xsl:template match="ead:physloc[normalize-space() = '']"/>     <!-- don't copy empty physloc -->
+    <xsl:template match="ead:extent[normalize-space() = '']"/>      <!-- or extents -->
+    <xsl:template match="ead:scopecontent[normalize-space() = '']"/>    <!-- don't copy empty scopecontent -->
+    <xsl:template match="ead:origination[ead:persname[normalize-space() = '']]"/>    <!-- don't copy -->
 
     <xsl:template match="ead:ead/ead:archdesc/ead:did//ead:unitdate[normalize-space() = '']"
         priority="0.6">
