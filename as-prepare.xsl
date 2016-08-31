@@ -8,8 +8,8 @@
 
     <!-- https://github.com/YaleArchivesSpace/xslt-files/blob/master/EAD_add_IDs_to_containers.xsl 
          see FAQ in https://github.com/archivesspace/archivesspace/blob/master/UPGRADING_1.5.0.md
-         identity transform removed from this stylesheet as it's in the imported stylesheet. -->
-    <xsl:import href="EAD_add_IDs_to_containers.xsl"/> 
+         identity transform removed from this stylesheet as it's in the imported stylesheet. 
+    <xsl:import href="EAD_add_IDs_to_containers.xsl"/> -->
 
     <xd:doc scope="stylesheet">
         <xd:desc>
@@ -45,8 +45,15 @@
         <xsl:apply-templates select="node()"/>
     </xsl:template>
 
- 
-    <xsl:template match="text()" priority="0.8">
+    <!--standard identity template, which does all of the copying-->
+    <xsl:template match="@*|node()">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:copy>
+    </xsl:template>
+    
+
+    <xsl:template match="text()" priority="0.8" >
         <xsl:value-of select="normalize-space(.)"/>
     </xsl:template>
 
@@ -161,14 +168,63 @@
 
 
     <!--  #<:ValidationException: {:errors=>{"instances/0/container/type_1"=>["Property is required but was missing"], 
-                                "instances/0/container/indicator_1"=>["Property is required but was missing"]}}>    -->
+                                "instances/0/container/indicator_1"=>["Property is required but was missing"]}}>    
     <xsl:template match="ead:did/ead:container[normalize-space() = '']">
         <xsl:call-template name="log">
             <xsl:with-param name="comment">empty container element removed by as-prepare.xsl</xsl:with-param>
         </xsl:call-template>
+    </xsl:template> -->
+
+
+    <xsl:template match="ead:did/ead:container">
+        <xsl:choose>
+            <xsl:when test="normalize-space() = ''">
+                <xsl:call-template name="log">
+                    <xsl:with-param name="comment">empty container element removed by as-prepare.xsl</xsl:with-param>
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:when test="not(@type)">
+                <xsl:copy>
+                    <xsl:attribute name="type">
+                        <xsl:value-of select="substring-before(normalize-space(), ' ')"/>
+                    </xsl:attribute>
+                    <xsl:if test="not(@id)">
+                        <xsl:attribute name="id" select="generate-id()" />
+                    </xsl:if>
+                    <xsl:apply-templates select="@*|node()"/>                    
+                    <xsl:call-template name="log">
+                        <xsl:with-param name="comment">@type added by as-prepare.xsl</xsl:with-param>
+                    </xsl:call-template>
+                </xsl:copy>               
+            </xsl:when>        
+            <xsl:when test="matches(@type, '[Bb]ox-[Ff]older' ) and matches(text(),'\d+:\d+')">
+                <xsl:variable name="parentid" select="generate-id()"/>
+                <xsl:element name="container">
+                    <xsl:attribute name="type"  select="substring-before(@type,'-')" />
+                    <xsl:attribute name="label" select="substring-before(@label,'-')"/>
+                    <xsl:if test="not(@id)">
+                        <xsl:attribute name="id" select="$parentid" />
+                    </xsl:if>
+                    <xsl:apply-templates select="@id|@altrender|@audience|@encodinganalog"/>
+                    <xsl:value-of select="substring-before(normalize-space(),':')"/>
+                </xsl:element>
+                <xsl:call-template name="log">
+                    <xsl:with-param name="comment">@type=box-folder split  <xsl:value-of select="."/>...</xsl:with-param>
+                </xsl:call-template>
+                <xsl:element name="container" >
+                    <xsl:attribute name="type"  select="substring-after(@type,'-')"/>
+                    <xsl:attribute name="label" select="substring-after(@label,'-')" />
+                    <xsl:attribute name="parent" select="$parentid" />
+                    <xsl:value-of select="substring-after(normalize-space(),':')"></xsl:value-of>
+                </xsl:element>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="ead:did/ead:container[not(@type)][normalize-space() != '']">
+ <!--   <xsl:template match="ead:did/ead:container[not(@type)][normalize-space() != '']">
         <xsl:copy>
             <xsl:attribute name="type">
                 <xsl:value-of select="substring-before(normalize-space(), ' ')"/>
@@ -179,7 +235,7 @@
             <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
-
+-->
 
     <!--  #<:ValidationException: {:errors=>{"ead_id"=>["Must be 255 characters or fewer"]}}>   -->
     <xsl:template match="ead:eadid">
