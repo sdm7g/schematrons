@@ -70,6 +70,8 @@
     <xsl:template match="ead:extent[normalize-space() = '']"/>      <!-- or extents -->
     <xsl:template match="ead:scopecontent[normalize-space() = '']"/>    <!-- don't copy empty scopecontent -->
     <xsl:template match="ead:origination[ead:persname[normalize-space() = '']]"/>    <!-- don't copy -->
+    
+    <xsl:template match="ead:revisiondesc/ead:change[normalize-space()='']"></xsl:template> <!-- we even have some of these! -->
 
     <xsl:template match="ead:ead/ead:archdesc/ead:did//ead:unitdate[normalize-space() = '']"
         priority="0.6">

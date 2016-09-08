@@ -27,14 +27,23 @@
     </xsl:template>
 
 
-    <xsl:template match="ead:dao|ead:daogrp"> <!-- mark existing dao's as legacy -->
+    <xsl:template match="ead:dao|ead:daogrp|ead:daoloc"> <!-- mark existing dao's as legacy -->
         <xsl:copy>
             <xsl:apply-templates select="@*" />
-            <daodesc>Legacy digital objects</daodesc>
+            <xsl:choose>
+                <xsl:when test="not(@xlink:role) and  (lower-case(@xlink:title)='text') and contains(@xlink:href,'/tei/')">
+                    <xsl:attribute name="xlink:role">text-tei-transcripted</xsl:attribute>
+                    <daodesc>TEI Transcription</daodesc>
+                </xsl:when>
+                <xsl:otherwise>
+                    <daodesc><p>Legacy digital objects</p></daodesc>
+                </xsl:otherwise>
+            </xsl:choose>            
             <xsl:apply-templates select="node()" />
         </xsl:copy>
     </xsl:template>
-
+    
+ 
     <xsl:template match="ead:did">
 
         <xsl:variable name="myid">
@@ -87,7 +96,8 @@
                             <xsl:attribute name="xlink:title"
                                 select="substring(concat('Tracksys:[', /level, ']: ', normalize-space(./desc)), 1, 255)"
                             />
-                            <daodesc>Tracksys component links</daodesc>
+                            <xsl:attribute name="xlink:role">application</xsl:attribute>
+                            <daodesc><p>Tracksys component links</p></daodesc>
                         </xsl:element>
 
                     </xsl:for-each>
@@ -100,7 +110,8 @@
                         <xsl:attribute name="xlink:title"
                             select="substring(concat('Tracksys:[', $component/level, ']: ', normalize-space($component/desc)), 1, 255)"
                         />
-                        <daodesc>Tracksys component links</daodesc>
+                        <xsl:attribute name="xlink:role">application</xsl:attribute>
+                        <daodesc><p>Tracksys component links</p></daodesc>
                     </xsl:element>
                 </xsl:when>
                 <xsl:otherwise>
@@ -115,7 +126,7 @@
 
             <xsl:if test="$component/master-files/master-file">
                 <daogrp xlink:type="extended">
-                    <daodesc><xsl:value-of select="$component/desc"/></daodesc>
+                    <daodesc><p><xsl:value-of select="$component/desc"/></p></daodesc>
                     <xsl:for-each select="$component/master-files/master-file">
                         <xsl:element name="daoloc">
                             <xsl:attribute name="xlink:type">locator</xsl:attribute>
@@ -123,6 +134,7 @@
                             <xsl:attribute name="id" select="translate(pid, ':', '_')"/>
                             <xsl:attribute name="xlink:href"
                                 select="concat($iiif_prefix, pid, $iiif_suffix)"/>
+                            <xsl:attribute name="xlink:role">image-service</xsl:attribute>
                         </xsl:element>
                     </xsl:for-each>
                 </daogrp>
