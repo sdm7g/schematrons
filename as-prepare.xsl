@@ -196,7 +196,12 @@
                 </xsl:copy>               
             </xsl:when>        
             <xsl:when test="matches(@type, '[Bb]ox-[Ff]older' ) and matches(text(),'\d+:\d+')">
-                <xsl:variable name="parentid" select="generate-id()"/>
+                <xsl:variable name="parentid" >
+                    <xsl:choose>
+                        <xsl:when test="@id"><xsl:value-of select="@id"/></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="generate-id()" /></xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
                 <xsl:element name="container">
                     <xsl:attribute name="type"  select="substring-before(@type,'-')" />
                     <xsl:attribute name="label" select="substring-before(@label,'-')"/>
