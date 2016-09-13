@@ -36,6 +36,7 @@
                     <daodesc>TEI Transcription</daodesc>
                 </xsl:when>
                 <xsl:otherwise>
+                    <xsl:attribute name="xlink:role">legacy-image</xsl:attribute>
                     <daodesc><p>Legacy digital objects</p></daodesc>
                 </xsl:otherwise>
             </xsl:choose>            
@@ -124,7 +125,11 @@
                 <xsl:apply-templates select="node()"/>
             </xsl:if>
 
+
+
             <xsl:if test="$component/master-files/master-file">
+
+
                 <daogrp xlink:type="extended">
                     <daodesc><p><xsl:value-of select="$component/desc"/></p></daodesc>
                     <xsl:for-each select="$component/master-files/master-file">
@@ -134,7 +139,7 @@
                             <xsl:attribute name="id" select="translate(pid, ':', '_')"/>
                             <xsl:attribute name="xlink:href"
                                 select="concat($iiif_prefix, pid, $iiif_suffix)"/>
-                            <xsl:attribute name="xlink:role">image-service</xsl:attribute>
+                            <xsl:attribute name="xlink:role">image-master</xsl:attribute>
                         </xsl:element>
                     </xsl:for-each>
                 </daogrp>
