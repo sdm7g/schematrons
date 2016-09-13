@@ -16,6 +16,7 @@
     <!--<xsl:param name="ts_api_url">http://localhost:3000/api/iiif/</xsl:param>-->
     <xsl:param name="iiif_prefix">http://iiif.lib.virginia.edu/iiif/</xsl:param>
     <xsl:param name="iiif_suffix">/full/,680/0/default.jpg</xsl:param>
+    <xsl:param name="iiif_manifest_prefix">http://localhost:9000/</xsl:param>
 
     <xsl:param name="components" select="document($component_xml)"/>
 
@@ -80,59 +81,54 @@
             </xsl:for-each>
             <xsl:text>&#xa;&#x09;</xsl:text>
 
-            <!-- Generate links to components in Tracksys: put this near the top -->
+            <xsl:if test="not(parent::ead:archdesc)">
+                <xsl:apply-templates select="node()"/>
+            </xsl:if>
+            
 
             <xsl:choose>
-                <xsl:when test="count($component) > 1">
+                <xsl:when test="count($component) = 0"> 
+                    <xsl:message>No component found for <xsl:value-of select="$myid"/> :
+                        <xsl:value-of select="saxon:path()"/></xsl:message>
+                </xsl:when>
+            <xsl:when test="count($component) > 1">
                     <xsl:comment>
                         WARNING: More than one component matching id: <xsl:value-of select="$myid"/>
                     </xsl:comment>
                     <xsl:message> WARNING: More than one component matching id: <xsl:value-of
                             select="$myid"/> : <xsl:value-of select="saxon:path()"/></xsl:message>
-                    <xsl:for-each select="$component">
-                        <xsl:element name="dao">
-                            <xsl:attribute name="xlink:type">simple</xsl:attribute>
-                            <xsl:attribute name="xlink:href"
-                                select="concat($ts_component_url, ./component-id)"/>
-                            <xsl:attribute name="xlink:title"
-                                select="substring(concat('Tracksys:[', /level, ']: ', normalize-space(./desc)), 1, 255)"
-                            />
-                            <xsl:attribute name="xlink:role">application</xsl:attribute>
-                            <daodesc><p>Tracksys component links</p></daodesc>
-                        </xsl:element>
-
-                    </xsl:for-each>
-                </xsl:when>
-                <xsl:when test="count($component) = 1">
-                    <xsl:element name="dao">
-                        <xsl:attribute name="xlink:type">simple</xsl:attribute>
-                        <xsl:attribute name="xlink:href"
-                            select="concat($ts_component_url, normalize-space($component/component-id))"/>
-                        <xsl:attribute name="xlink:title"
-                            select="substring(concat('Tracksys:[', $component/level, ']: ', normalize-space($component/desc)), 1, 255)"
-                        />
-                        <xsl:attribute name="xlink:role">application</xsl:attribute>
-                        <daodesc><p>Tracksys component links</p></daodesc>
-                    </xsl:element>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:message>No component found for <xsl:value-of select="$myid"/> :
-                            <xsl:value-of select="saxon:path()"/></xsl:message>
-                </xsl:otherwise>
+            </xsl:when>
+                <!-- Otherwise OK: <xsl:otherwise></xsl:otherwise>  -->
             </xsl:choose>
+            
+            <!--  Warning issued above if &gt 1 or 0 but for simplicity, we process for-each here even though we hope there is only one. -->
+            <xsl:for-each select="$component">
+                <xsl:element name="dao">
+                    <xsl:attribute name="xlink:type">simple</xsl:attribute>
+                    <xsl:attribute name="xlink:href"
+                        select="concat($ts_component_url, ./component-id)"/>
+                    <xsl:attribute name="xlink:title"
+                        select="substring(concat('Tracksys:[', /level, ']: ', normalize-space(./desc)), 1, 255)"
+                    />
+                    <xsl:attribute name="xlink:role">application</xsl:attribute>
+                    <daodesc><p>Tracksys component links</p></daodesc>
+                </xsl:element>
 
-            <xsl:if test="not(parent::ead:archdesc)">
-                <xsl:apply-templates select="node()"/>
-            </xsl:if>
 
 
+            <xsl:if test="./master-files/master-file">
 
-            <xsl:if test="$component/master-files/master-file">
-
+                <xsl:element name="dao">
+                    <xsl:attribute name="xlink:type">simple</xsl:attribute>
+                    <xsl:attribute name="xlink:role">image-service-manifest</xsl:attribute>
+                    <xsl:attribute name="xlink:title">xlink:title iiif-manifest</xsl:attribute>
+                    <xsl:attribute name="xlink:href" select="concat($iiif_manifest_prefix, ./pid )"></xsl:attribute>
+                    <daodesc><p>daodesc/p iiif-manifest</p></daodesc>
+                </xsl:element>
 
                 <daogrp xlink:type="extended">
-                    <daodesc><p><xsl:value-of select="$component/desc"/></p></daodesc>
-                    <xsl:for-each select="$component/master-files/master-file">
+                    <daodesc><p><xsl:value-of select="./desc"/></p></daodesc>
+                    <xsl:for-each select="./master-files/master-file">
                         <xsl:element name="daoloc">
                             <xsl:attribute name="xlink:type">locator</xsl:attribute>
                             <xsl:attribute name="xlink:title" select="title"/>
@@ -144,6 +140,10 @@
                     </xsl:for-each>
                 </daogrp>
             </xsl:if>
+
+
+            </xsl:for-each>
+            
 
         </xsl:copy>
     </xsl:template>
