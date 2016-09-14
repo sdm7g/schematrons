@@ -16,7 +16,7 @@
     <!--<xsl:param name="ts_api_url">http://localhost:3000/api/iiif/</xsl:param>-->
     <xsl:param name="iiif_prefix">http://iiif.lib.virginia.edu/iiif/</xsl:param>
     <xsl:param name="iiif_suffix">/full/,680/0/default.jpg</xsl:param>
-    <xsl:param name="iiif_manifest_prefix">http://localhost:9000/</xsl:param>
+    <xsl:param name="iiif_manifest_prefix"><!--http://localhost:9000/--></xsl:param>
 
     <xsl:param name="components" select="document($component_xml)"/>
 
@@ -108,7 +108,7 @@
                     <xsl:attribute name="xlink:href"
                         select="concat($ts_component_url, ./component-id)"/>
                     <xsl:attribute name="xlink:title"
-                        select="substring(concat('Tracksys:[', /level, ']: ', normalize-space(./desc)), 1, 255)"
+                        select="substring(concat('Tracksys:[', level, ']: ', normalize-space(./desc)), 1, 255)"
                     />
                     <xsl:attribute name="xlink:role">application</xsl:attribute>
                     <daodesc><p>Tracksys component links</p></daodesc>
@@ -121,9 +121,9 @@
                 <xsl:element name="dao">
                     <xsl:attribute name="xlink:type">simple</xsl:attribute>
                     <xsl:attribute name="xlink:role">image-service-manifest</xsl:attribute>
-                    <xsl:attribute name="xlink:title">xlink:title iiif-manifest</xsl:attribute>
+                    <xsl:attribute name="xlink:title" select="substring(concat('IIIF-manifest: ', normalize-space(./desc)),1,255)"/>
                     <xsl:attribute name="xlink:href" select="concat($iiif_manifest_prefix, ./pid )"></xsl:attribute>
-                    <daodesc><p>daodesc/p iiif-manifest</p></daodesc>
+                    <daodesc><p><xsl:value-of select="normalize-space(./desc)"/></p></daodesc>
                 </xsl:element>
 
                 <daogrp xlink:type="extended">
