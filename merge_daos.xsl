@@ -34,7 +34,7 @@
             <xsl:choose>
                 <xsl:when test="not(@xlink:role) and  (lower-case(@xlink:title)='text') and contains(@xlink:href,'/tei/')">
                     <xsl:attribute name="xlink:role">text-tei-transcripted</xsl:attribute>
-                    <daodesc>TEI Transcription</daodesc>
+                    <daodesc><p>TEI Transcription</p></daodesc>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:attribute name="xlink:role">legacy-image</xsl:attribute>

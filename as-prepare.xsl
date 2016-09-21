@@ -284,11 +284,7 @@
                     <xsl:attribute name="normal" select="$today"/>
                     <xsl:value-of select="$today"/>
                 </xsl:element>
-                <xsl:element name="item">Converted to ArchivesSpace EAD requirements with
-                    as-prepare.xsl.</xsl:element>
-                <xsl:element name="item">
-                    <xsl:value-of select="normalize-space(/ead:ead/ead:eadheader/ead:eadid)"/>
-                </xsl:element>
+                <xsl:element name="item">Converted to ArchivesSpace EAD requirements with as-prepare.xsl.</xsl:element>
             </xsl:element>
         </xsl:copy>
 
