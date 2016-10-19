@@ -21,6 +21,7 @@
          so we can switch easier from tests to production -->
 
     <xsl:param name="components" select="document($component_xml)"/>
+    <xsl:param name="unitid_audience">internal</xsl:param>
 
     <!-- identity transform is the default -->
     <xsl:template match="@* | node()">
@@ -33,7 +34,7 @@
     <xsl:template match="@xlink:*[../@xlink:href='']" />
     
 
-    <xsl:template match="ead:dao|ead:daogrp|ead:daoloc"> <!-- mark existing dao role -->
+    <xsl:template match="ead:dao|ead:daoloc"> <!-- mark existing dao role -->
         <xsl:copy>
             <xsl:apply-templates select="@*" />
             <xsl:choose>
@@ -46,7 +47,7 @@
                         <daodesc><p>Text Transcription (TEI)</p></daodesc>
                     </xsl:if>
                 </xsl:when>
-                <xsl:when test="@xlink:role != ''">
+                <xsl:when test="not(@xlink:role) or @xlink:role = ''">
                     <xsl:attribute name="xlink:role">legacy-image</xsl:attribute>
                     <xsl:if test="not(daodesc)">
                     <daodesc><p>Legacy digital objects</p></daodesc>
@@ -92,7 +93,7 @@
 
             <xsl:for-each select="$component/(ead-id | ead-id-cache | level | desc | pid | in_dl)">
                 <xsl:text>&#xa;&#x09;</xsl:text>
-                <xsl:comment select="."/>
+                <xsl:comment select="concat( local-name(.),': ',.)"/>
             </xsl:for-each>
             <xsl:text>&#xa;&#x09;</xsl:text>
 
@@ -118,17 +119,19 @@
             
             <!--  Warning issued above if &gt 1 or 0 but for simplicity, we process for-each here even though we hope there is only one. -->
             <xsl:for-each select="$component">
-                <xsl:element name="dao">
-                    <xsl:attribute name="xlink:type">simple</xsl:attribute>
-                    <xsl:attribute name="xlink:href"
-                        select="concat($ts_component_url, ./component-id)"/>
-                    <xsl:attribute name="xlink:title"
-                        select="substring(concat('Tracksys:[', level, ']: ', normalize-space(./desc)), 1, 255)"
-                    />
-                    <xsl:attribute name="xlink:role">application</xsl:attribute>
-                    <daodesc><p>Tracksys component links</p></daodesc>
-                </xsl:element>
-
+                <xsl:element name="unitid">
+                    <xsl:attribute name="audience" select="$unitid_audience"/>
+                    <xsl:attribute name="label">component_id</xsl:attribute>
+                    <xsl:attribute name="type">uva-lib</xsl:attribute>
+                    <xsl:attribute name="identifier" select="./pid" />
+                    <xsl:value-of select="./pid"/>
+                    <xsl:element name="extptr">
+                        <xsl:attribute name="xlink:type">simple</xsl:attribute>
+                        <xsl:attribute name="xlink:href"
+                            select="concat($ts_component_url, ./component-id)" />
+                        <xsl:attribute name="title">Tracksys component</xsl:attribute>
+                    </xsl:element>
+               </xsl:element>
 
 
             <xsl:if test="./master-files/master-file">
