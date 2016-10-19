@@ -16,7 +16,9 @@
     <!--<xsl:param name="ts_api_url">http://localhost:3000/api/iiif/</xsl:param>-->
     <xsl:param name="iiif_prefix">http://iiif.lib.virginia.edu/iiif/</xsl:param>
     <xsl:param name="iiif_suffix">/full/,680/0/default.jpg</xsl:param>
-    <xsl:param name="iiif_manifest_prefix"><!--http://localhost:9000/--></xsl:param>
+    <xsl:param name="iiif_manifest_prefix"><!-- http://localhost:9000/ --></xsl:param>
+    <!-- ASpace plugin now resolving AppConfig[:iiif_service] prefix at runtime
+         so we can switch easier from tests to production -->
 
     <xsl:param name="components" select="document($component_xml)"/>
 
@@ -27,18 +29,31 @@
         </xsl:copy>
     </xsl:template>
 
+    <!-- Don't copy default xlink attribs for empty href : -->
+    <xsl:template match="@xlink:*[../@xlink:href='']" />
+    
 
-    <xsl:template match="ead:dao|ead:daogrp|ead:daoloc"> <!-- mark existing dao's as legacy -->
+    <xsl:template match="ead:dao|ead:daogrp|ead:daoloc"> <!-- mark existing dao role -->
         <xsl:copy>
             <xsl:apply-templates select="@*" />
             <xsl:choose>
                 <xsl:when test="not(@xlink:role) and  (lower-case(@xlink:title)='text') and contains(@xlink:href,'/tei/')">
                     <xsl:attribute name="xlink:role">text-tei-transcripted</xsl:attribute>
-                    <daodesc><p>TEI Transcription</p></daodesc>
+                    <xsl:if test="not(./@xlink:title) or ./@xlink:title = ''" >
+                        <xsl:attribute name="xlink:title">Text transcription (TEI)</xsl:attribute>
+                    </xsl:if>
+                    <xsl:if test="not(daodesc)" >
+                        <daodesc><p>Text Transcription (TEI)</p></daodesc>
+                    </xsl:if>
+                </xsl:when>
+                <xsl:when test="@xlink:role != ''">
+                    <xsl:attribute name="xlink:role">legacy-image</xsl:attribute>
+                    <xsl:if test="not(daodesc)">
+                    <daodesc><p>Legacy digital objects</p></daodesc>
+                    </xsl:if>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:attribute name="xlink:role">legacy-image</xsl:attribute>
-                    <daodesc><p>Legacy digital objects</p></daodesc>
+                    <xsl:message select="."></xsl:message>
                 </xsl:otherwise>
             </xsl:choose>            
             <xsl:apply-templates select="node()" />
