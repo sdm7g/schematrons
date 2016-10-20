@@ -22,11 +22,17 @@
 
     <xsl:param name="components" select="document($component_xml)"/>
     <xsl:param name="unitid_audience">internal</xsl:param>
+    <xsl:param name="add_manifests" select="true()" />
+    <xsl:param name="add_imagefiles" select="false()" />
+    <xsl:param name="add_pids" select="true()" />
 
-    <xsl:template match="/">
-        <xsl:message select="$component_dir" />
-        <xsl:message select="$component_xml" />
-        <!--<xsl:message select="local-name($components/)" />-->
+    <xsl:template match="/"> 
+        <xsl:if test="not($components/objects)">
+            <xsl:message select="$component_dir" />
+            <xsl:message select="$component_xml" />
+            <xsl:message select="local-name($components/*)" />
+            <xsl:message terminate="yes">component xml not found!</xsl:message>
+        </xsl:if>
         <xsl:apply-templates />
     </xsl:template>
 
