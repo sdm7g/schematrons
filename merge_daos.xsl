@@ -6,10 +6,10 @@
 
     <xsl:output method="xml" indent="yes"/>
 
-    <xsl:param name="basedir" select="base-uri()"/>
     <xsl:param name="basename" select="tokenize(base-uri(), '/')[last()]"/>
+    <xsl:param name="component_dir" select="resolve-uri( 'ts_components/' )" />
     <xsl:param name="component_xml"
-        select="resolve-uri(concat('ts_components/', $basename), $basedir)"/>
+        select="resolve-uri( $basename, $component_dir)"/>
     <xsl:param name="linkto"/>
     <xsl:param name="ts_component_url"
         >http://tracksys.lib.virginia.edu/admin/components/</xsl:param>
@@ -22,6 +22,13 @@
 
     <xsl:param name="components" select="document($component_xml)"/>
     <xsl:param name="unitid_audience">internal</xsl:param>
+
+    <xsl:template match="/">
+        <xsl:message select="$component_dir" />
+        <xsl:message select="$component_xml" />
+        <!--<xsl:message select="local-name($components/)" />-->
+        <xsl:apply-templates />
+    </xsl:template>
 
     <!-- identity transform is the default -->
     <xsl:template match="@* | node()">
@@ -129,7 +136,7 @@
                         <xsl:attribute name="xlink:type">simple</xsl:attribute>
                         <xsl:attribute name="xlink:href"
                             select="concat($ts_component_url, ./component-id)" />
-                        <xsl:attribute name="title">Tracksys component</xsl:attribute>
+                        <xsl:attribute name="xlink:title">Tracksys component</xsl:attribute>
                     </xsl:element>
                </xsl:element>
 
