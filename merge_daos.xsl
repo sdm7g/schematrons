@@ -103,18 +103,18 @@
                 <xsl:apply-templates select="node()"/>
             </xsl:if>
 
-
+            <xsl:if test="$add_pids">
             <xsl:for-each select="$component/(ead-id | ead-id-cache | level | desc | pid | in_dl)">
                 <xsl:text>&#xa;&#x09;</xsl:text>
                 <xsl:comment select="concat( local-name(.),': ',.)"/>
             </xsl:for-each>
             <xsl:text>&#xa;&#x09;</xsl:text>
+            </xsl:if>
 
             <xsl:if test="not(parent::ead:archdesc)">
                 <xsl:apply-templates select="node()"/>
             </xsl:if>
             
-
             <xsl:choose>
                 <xsl:when test="count($component) = 0"> 
                     <xsl:message>No component found for <xsl:value-of select="$myid"/> :
@@ -132,6 +132,8 @@
             
             <!--  Warning issued above if &gt 1 or 0 but for simplicity, we process for-each here even though we hope there is only one. -->
             <xsl:for-each select="$component">
+
+                <xsl:if test="$add_pids">
                 <xsl:element name="unitid">
                     <xsl:attribute name="audience" select="$unitid_audience"/>
                     <xsl:attribute name="label">component_id</xsl:attribute>
@@ -145,10 +147,12 @@
                         <xsl:attribute name="xlink:title">Tracksys component</xsl:attribute>
                     </xsl:element>
                </xsl:element>
+               </xsl:if>
 
 
             <xsl:if test="./master-files/master-file">
 
+                <xsl:if test="$add_manifests">
                 <xsl:element name="dao">
                     <xsl:attribute name="xlink:type">simple</xsl:attribute>
                     <xsl:attribute name="xlink:role">image-service-manifest</xsl:attribute>
@@ -156,7 +160,9 @@
                     <xsl:attribute name="xlink:href" select="concat($iiif_manifest_prefix, ./pid )"></xsl:attribute>
                     <daodesc><p><xsl:value-of select="normalize-space(./desc)"/></p></daodesc>
                 </xsl:element>
+                </xsl:if>
 
+                <xsl:if test="$add_imagefiles">
                 <daogrp xlink:type="extended">
                     <daodesc><p><xsl:value-of select="./desc"/></p></daodesc>
                     <xsl:for-each select="./master-files/master-file">
@@ -170,6 +176,7 @@
                         </xsl:element>
                     </xsl:for-each>
                 </daogrp>
+                </xsl:if>
             </xsl:if>
 
 
