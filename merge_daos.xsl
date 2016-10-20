@@ -26,6 +26,11 @@
     <xsl:param name="add_imagefiles" select="false()" />
     <xsl:param name="add_pids" select="true()" />
 
+    <!-- Apparently, the value returned by Saxon 9 current-date() is not a valid date according to the EAD schema,
+        due to the hour:min time appended to the end. -->
+    <xsl:variable name="today" select="replace(string(current-date()), '-\d+:\d+', '')"/>
+    
+
     <xsl:template match="/"> 
         <xsl:if test="not($components/objects)">
             <xsl:message select="$component_dir" />
@@ -46,6 +51,27 @@
     <!-- Don't copy default xlink attribs for empty href : -->
     <xsl:template match="@xlink:*[../@xlink:href='']" />
     
+    <!-- add revisiondesc -->
+    <xsl:template match="ead:ead/ead:eadheader/ead:revisiondesc">
+        <xsl:copy>
+            <xsl:apply-templates/>
+            <xsl:element name="change">
+                <xsl:element name="date">
+                    <xsl:attribute name="normal" select="$today"/>
+                    <xsl:value-of select="$today"/>
+                </xsl:element>
+                <xsl:element name="item">
+                    <xsl:text>Tracking system digital object info merged:</xsl:text>  
+                    <xsl:if test="$add_pids"><xsl:text> Pids</xsl:text></xsl:if>
+                    <xsl:if test="$add_manifests"><xsl:text> Manifests</xsl:text></xsl:if>
+                    <xsl:if test="$add_imagefiles"><xsl:text> image-files</xsl:text></xsl:if>
+                </xsl:element>
+            </xsl:element>
+        </xsl:copy>
+        
+    </xsl:template>
+
+
 
     <xsl:template match="ead:dao|ead:daoloc"> <!-- mark existing dao role -->
         <xsl:copy>
