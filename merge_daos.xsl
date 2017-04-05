@@ -166,12 +166,13 @@
                     <xsl:attribute name="type">uva-lib</xsl:attribute>
                     <xsl:attribute name="identifier" select="./pid" />
                     <xsl:value-of select="./pid"/>
+ <!--      aspace didn't like mixed content here - removed. It was just a test anyway.
                     <xsl:element name="extptr">
                         <xsl:attribute name="xlink:type">simple</xsl:attribute>
                         <xsl:attribute name="xlink:href"
                             select="concat($ts_component_url, ./component-id)" />
                         <xsl:attribute name="xlink:title">Tracksys component</xsl:attribute>
-                    </xsl:element>
+                    </xsl:element>-->
                </xsl:element>
                </xsl:if>
 

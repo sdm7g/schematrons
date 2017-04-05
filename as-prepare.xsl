@@ -83,6 +83,7 @@
         </xsl:copy>
     </xsl:template>
 
+    <xsl:template match="ead:unitid/ead:extptr" /> <!-- temporary test -->
 
     <xsl:template match="/ead:ead/ead:archdesc/ead:did/ead:physdesc[not(ead:extent)]">
         <xsl:copy>
