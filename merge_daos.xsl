@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:isbn:1-931666-22-9"
     xmlns:ead="urn:isbn:1-931666-22-9" xmlns:xlink="http://www.w3.org/1999/xlink"
-    xmlns:saxon="http://saxon.sf.net/" exclude-result-prefixes="xs" version="2.0">
+    xmlns:saxon="http://saxon.sf.net/" exclude-result-prefixes="xs saxon" version="2.0">
 
     <xsl:output method="xml" indent="yes"/>
 
@@ -16,14 +16,14 @@
     <!--<xsl:param name="ts_api_url">http://localhost:3000/api/iiif/</xsl:param>-->
     <xsl:param name="iiif_prefix">http://iiif.lib.virginia.edu/iiif/</xsl:param>
     <xsl:param name="iiif_suffix">/full/,680/0/default.jpg</xsl:param>
-    <xsl:param name="iiif_manifest_prefix"><!-- http://localhost:9000/ --></xsl:param>
+    <xsl:param name="iiif_manifest_prefix">http://migration.lib.virginia.edu/tracksys/</xsl:param>
     <!-- ASpace plugin now resolving AppConfig[:iiif_service] prefix at runtime
          so we can switch easier from tests to production -->
 
     <xsl:param name="components" select="document($component_xml)"/>
     <xsl:param name="unitid_audience">internal</xsl:param>
     <xsl:param name="add_manifests" select="true()" />
-    <xsl:param name="add_imagefiles" select="false()" />
+    <xsl:param name="add_imagefiles" select="true()" />
     <xsl:param name="add_pids" select="true()" />
 
     <!-- Apparently, the value returned by Saxon 9 current-date() is not a valid date according to the EAD schema,
@@ -183,15 +183,15 @@
                 <xsl:element name="dao">
                     <xsl:attribute name="xlink:type">simple</xsl:attribute>
                     <xsl:attribute name="xlink:role">image-service-manifest</xsl:attribute>
-                    <xsl:attribute name="xlink:title" select="substring(concat('IIIF-manifest: ', normalize-space(./desc)),1,255)"/>
+                    <xsl:attribute name="xlink:title" >IIIF-manifest</xsl:attribute>
                     <xsl:attribute name="xlink:href" select="concat($iiif_manifest_prefix, ./pid )"></xsl:attribute>
-                    <daodesc><p><xsl:value-of select="normalize-space(./desc)"/></p></daodesc>
+                    <daodesc audience="internal"><p><xsl:value-of select="normalize-space(./desc)"/></p></daodesc>
                 </xsl:element>
                 </xsl:if>
 
                 <xsl:if test="$add_imagefiles">
                 <daogrp xlink:type="extended">
-                    <daodesc><p><xsl:value-of select="./desc"/></p></daodesc>
+                    <daodesc audience="internal"><p><xsl:value-of select="./desc"/></p></daodesc>
                     <xsl:for-each select="./master-files/master-file">
                         <xsl:element name="daoloc">
                             <xsl:attribute name="xlink:type">locator</xsl:attribute>
