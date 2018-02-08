@@ -13,7 +13,7 @@
     <xsl:param name="agency" select="/ead:ead/ead:eadheader/ead:eadid/@mainagencycode" />
     <xsl:param name="identifier" select="/ead:ead/ead:eadheader/ead:eadid/@identifier" />
     <xsl:param name="publicid" select="/ead:ead/ead:eadheader/ead:eadid/@publicid" />
-    <xsl:param name="mss_num" select="/ead:ead/ead:eadheader/ead:filedesc/ead:titlestmt/ead:titleproper/ead:num" />
+    <xsl:param name="mss_num" select="/ead:ead/ead:eadheader/ead:filedesc/ead:titlestmt/ead:titleproper/ead:num[1]" />
     <xsl:param name="basename" select="tokenize(document-uri(/), '/')[last()]"/>
     
     <!--standard identity template, which does all of the copying-->
